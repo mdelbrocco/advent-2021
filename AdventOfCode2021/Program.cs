@@ -10,8 +10,8 @@ namespace AdventOfCode2021
       Console.WriteLine("Hello Advent!");
 
       //Day1.Solve();
-
-      Day2.Solve();
+      //Day2.Solve();
+      Day3.Solve();
     }
   }
 }
