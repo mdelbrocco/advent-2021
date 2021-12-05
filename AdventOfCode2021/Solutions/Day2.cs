@@ -19,6 +19,7 @@ namespace AdventOfCode2021.Solutions
         return new Vector(dir, mag);
       }).ToList();
       Part1(movements);
+      Part2(movements);
     }
 
     // Figure out the submarine's ending position.
@@ -53,9 +54,39 @@ namespace AdventOfCode2021.Solutions
       Console.WriteLine($"Multiplied Together: {horizontalPosition * depth}");
     }
 
-    private static void Part2()
+
+    // https://adventofcode.com/2021/day/2#part2
+    // Note: remember that "down" means + (positive) depth!
+    private static void Part2(List<Vector> movements)
     {
-      // TODO: after solving part 1
+      var horizontalPosition = 0;
+      var depth = 0;
+      var aim = 0;
+
+      foreach (var movement in movements)
+      {
+        if (movement.Direction == "forward")
+        {
+          horizontalPosition += movement.Magnitude;
+          depth += movement.Magnitude * aim;
+        }
+        else if (movement.Direction == "down")
+        {
+          aim += movement.Magnitude;
+        }
+        else if (movement.Direction == "up")
+        {
+          aim -= movement.Magnitude;
+        }
+        else
+        {
+          Console.WriteLine("UNEXPECTED INPUT!");
+        }
+      }
+
+      Console.WriteLine($"Horizontal Position: {horizontalPosition}");
+      Console.WriteLine($"Depth: {depth}");
+      Console.WriteLine($"Multiplied Together: {horizontalPosition * depth}");
     }
 
     private class Vector
