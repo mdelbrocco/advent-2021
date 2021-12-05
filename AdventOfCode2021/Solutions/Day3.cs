@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace AdventOfCode2021.Solutions
 {
@@ -10,6 +12,7 @@ namespace AdventOfCode2021.Solutions
       var readings = File.ReadAllLines("../../../Inputs/Day3.txt");
 
       Part1(readings);
+      Part2(readings);
     }
 
     // https://adventofcode.com/2021/day/3
@@ -81,6 +84,66 @@ namespace AdventOfCode2021.Solutions
       Console.WriteLine($"Epsilon reading: {epsilonReading}");
       Console.WriteLine($"Gamma reading: {gammaReading}");
       Console.WriteLine($"Multiplied together: {epsilonReading * gammaReading}");
+    }
+
+    // https://adventofcode.com/2021/day/3#part2
+    private static void Part2(string[] readings)
+    {
+      // For Oxygen reading: moving left to right, filter out values NOT IN the majority til only one remains. Prefer 1 when there is a tie.
+      var readingsByBitOfInterest = new SortedDictionary<char, List<string>>
+      {
+        { '0', new List<string>() },
+        { '1', new List<string>() }
+      };
+      var startsWith = "";
+      var oxygenRating = 0;
+
+      for (var i = 0; i < readings[0].Length; i++)
+      {
+        var readingsWeStillCareAbout = readings.Where(x => x.StartsWith(startsWith));
+        foreach (var reading in readingsWeStillCareAbout)
+        {
+          readingsByBitOfInterest[reading[i]].Add(reading);
+        }
+        var newListWeCareAbout = readingsByBitOfInterest['1'].Count >= readingsByBitOfInterest['0'].Count ? readingsByBitOfInterest['1'] : readingsByBitOfInterest['0'];
+        if (newListWeCareAbout.Count == 1)
+        {
+          oxygenRating = Convert.ToInt32(newListWeCareAbout.First(), 2);
+          break;
+        }
+        startsWith += readingsByBitOfInterest['1'].Count >= readingsByBitOfInterest['0'].Count ? '1' : '0';
+        readingsByBitOfInterest['0'] = new List<string>();
+        readingsByBitOfInterest['1'] = new List<string>();
+      } // If this loop gets to the end with no result, then something has gone wrong. Which is probably a sign it could have been designed a bit better but :shrug:
+
+      // For CO2 Scrubbing reading: moving left to right, filter out values THAT ARE IN the majority til only one remains. Prefer 1 when there is a tie.
+      readingsByBitOfInterest['0'] = new List<string>();
+      readingsByBitOfInterest['1'] = new List<string>();
+
+      startsWith = "";
+      var co2ScrubRating = 0;
+
+      for (var i = 0; i < readings[0].Length; i++)
+      {
+        var readingsWeStillCareAbout = readings.Where(x => x.StartsWith(startsWith));
+        foreach (var reading in readingsWeStillCareAbout)
+        {
+          readingsByBitOfInterest[reading[i]].Add(reading);
+        }
+        var newListWeCareAbout = readingsByBitOfInterest['1'].Count >= readingsByBitOfInterest['0'].Count ? readingsByBitOfInterest['0'] : readingsByBitOfInterest['1'];
+        if (newListWeCareAbout.Count == 1)
+        {
+          co2ScrubRating = Convert.ToInt32(newListWeCareAbout.First(), 2);
+          break;
+        }
+        startsWith += readingsByBitOfInterest['1'].Count >= readingsByBitOfInterest['0'].Count ? '0' : '1';
+        readingsByBitOfInterest['0'] = new List<string>();
+        readingsByBitOfInterest['1'] = new List<string>();
+      } // If this loop gets to the end with no result, then something has gone wrong. Which is probably a sign it could have been designed a bit better but :shrug:
+
+      Console.WriteLine($"Oxygen Rating: {oxygenRating}");
+      Console.WriteLine($"CO2 Scrubbing Rating: {co2ScrubRating}");
+      Console.WriteLine($"Multiplied Together: {oxygenRating * co2ScrubRating}");
     }
   }
 }
